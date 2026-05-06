@@ -28,7 +28,7 @@
     .hero p{font-size:15px;color:var(--muted);max-width:460px;margin:0 auto;line-height:1.7;}
     @keyframes slideUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px;max-width:1080px;margin:0 auto;padding:0 28px 20px;}
-    .card{background:var(--glass-strong);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--glass-border);border-radius:22px;padding:30px 26px;box-shadow:0 8px 32px rgba(0,0,0,0.08);transition:transform 0.25s ease,box-shadow 0.25s ease;position:relative;overflow:hidden;text-decoration:none;color:inherit;display:block;animation:slideUp 0.5s ease both;}
+    .card{background:var(--glass-strong);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--glass-border);border-radius:22px;padding:30px 26px;box-shadow:0 8px 32px rgba(0,0,0,0.08);transition:transform 0.25s ease,box-shadow 0.25s ease;position:relative;overflow:hidden;text-decoration:none;color:inherit;display:block;animation:slideUp 0.5s ease both;cursor:pointer;}
     .card::before{content:'';position:absolute;top:-50px;right:-50px;width:130px;height:130px;border-radius:50%;opacity:0.10;transition:transform 0.3s ease;}
     .card:hover{transform:translateY(-5px);box-shadow:0 18px 52px rgba(0,0,0,0.13);}
     .card:hover::before{transform:scale(1.35);}
@@ -46,6 +46,42 @@
     .card-btn{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;padding:8px 18px;border-radius:50px;border:none;cursor:pointer;transition:all 0.2s;color:white;font-family:'Syne',sans-serif;}
     .card-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,0.14);}
     .card-planner .card-btn{background:#6c63ff;} .card-checkin .card-btn{background:#f97316;} .card-burnout .card-btn{background:#ec4899;} .card-wellness .card-btn{background:#22c55e;} .card-notif .card-btn{background:#a855f7;}
+
+    /* ── Notification Modal ── */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center;padding:20px;}
+    .modal-overlay.open{display:flex;animation:fadeIn 0.2s ease;}
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+    .modal{background:white;border-radius:24px;padding:0;width:100%;max-width:460px;overflow:hidden;animation:slideUp 0.3s ease;}
+    .modal-header{background:linear-gradient(135deg,#a855f7,#7c3aed);padding:28px 28px 24px;color:white;position:relative;}
+    .modal-header h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;}
+    .modal-header p{font-size:13px;opacity:0.85;}
+    .modal-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:white;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .modal-body{padding:24px 28px;}
+    .notif-status{display:flex;align-items:center;gap:10px;background:#f8f4ff;border:1px solid #e9d5ff;border-radius:12px;padding:12px 16px;margin-bottom:20px;font-size:13.5px;}
+    .status-dot{width:10px;height:10px;border-radius:50%;background:#a855f7;flex-shrink:0;animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+    .notif-section{margin-bottom:20px;}
+    .notif-section label{display:block;font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;letter-spacing:0.3px;}
+    .notif-section input,.notif-section select{width:100%;padding:10px 14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s;}
+    .notif-section input:focus,.notif-section select:focus{border-color:#a855f7;}
+    .deadline-row{display:flex;gap:10px;margin-bottom:10px;align-items:center;}
+    .deadline-row input{flex:1;}
+    .deadline-row input[type="date"]{flex:1;}
+    .remove-btn{background:#fee2e2;border:none;color:#ef4444;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+    .add-deadline{background:none;border:1.5px dashed #d8b4fe;color:#a855f7;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;width:100%;margin-top:4px;transition:all 0.2s;}
+    .add-deadline:hover{background:#f8f4ff;}
+    .affirmations-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+    .affirmation-chip{background:#f8f4ff;border:1.5px solid #e9d5ff;border-radius:10px;padding:8px 12px;font-size:12px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;color:var(--text);}
+    .affirmation-chip.selected{background:#a855f7;border-color:#a855f7;color:white;}
+    .modal-footer{padding:0 28px 28px;display:flex;gap:10px;}
+    .btn-enable{flex:1;padding:12px;background:linear-gradient(135deg,#a855f7,#7c3aed);color:white;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+    .btn-enable:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(168,85,247,0.3);}
+    .btn-cancel{padding:12px 20px;background:#f1f5f9;color:var(--muted);border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+    .notif-success{display:none;text-align:center;padding:8px 0 4px;}
+    .notif-success .check{font-size:48px;margin-bottom:8px;}
+    .notif-success h3{font-family:'Syne',sans-serif;font-size:18px;color:var(--navy);margin-bottom:6px;}
+    .notif-success p{font-size:13px;color:var(--muted);}
+    .active-badge{position:absolute;top:14px;right:14px;background:#22c55e;color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:'Syne',sans-serif;display:none;}
   </style>
 </head>
 <body>
@@ -93,14 +129,255 @@
         <p>Personalised recommendations for sleep, hydration, breaks, and mindfulness — tailored to your burnout severity.</p>
         <button class="card-btn">View Tips →</button>
       </a>
-      <a href="#" onclick="alert('Run in terminal:\npython backend/notifications/notification_service.py'); return false;" class="card card-notif">
+      <div class="card card-notif" onclick="openNotifModal()">
+        <div class="active-badge" id="activeBadge">● Active</div>
         <span class="card-icon">🔔</span>
-        <div class="card-label">Background Service</div>
-        <h3>Smart Notifications</h3>
-        <p>Timely affirmations and wellness reminders delivered to your desktop throughout your study day, respecting your quiet hours.</p>
-        <button class="card-btn">Learn More →</button>
-      </a>
+        <div class="card-label">Smart Reminders</div>
+        <h3>Notifications & Affirmations</h3>
+        <p>Get deadline reminders and daily positive affirmations delivered right in your browser — on any device.</p>
+        <button class="card-btn">Set Up Reminders →</button>
+      </div>
     </div>
   </div>
+
+  <!-- Notification Modal -->
+  <div class="modal-overlay" id="notifModal">
+    <div class="modal">
+      <div class="modal-header">
+        <button class="modal-close" onclick="closeNotifModal()">✕</button>
+        <h2>🔔 Smart Notifications</h2>
+        <p>Deadline reminders & daily affirmations</p>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <div class="notif-status">
+          <div class="status-dot"></div>
+          <span id="permStatus">Click "Enable Notifications" to get started</span>
+        </div>
+
+        <!-- Deadlines -->
+        <div class="notif-section">
+          <label>📅 Your Deadlines</label>
+          <div id="deadlinesList">
+            <div class="deadline-row">
+              <input type="text" placeholder="Subject / Assignment name">
+              <input type="date" id="dl1">
+              <button class="remove-btn" onclick="removeDeadline(this)">✕</button>
+            </div>
+          </div>
+          <button class="add-deadline" onclick="addDeadline()">+ Add another deadline</button>
+        </div>
+
+        <!-- Reminder Time -->
+        <div class="notif-section">
+          <label>⏰ Daily Reminder Time</label>
+          <input type="time" id="reminderTime" value="09:00">
+        </div>
+
+        <!-- Affirmation Types -->
+        <div class="notif-section">
+          <label>✨ Affirmation Style (pick your favourites)</label>
+          <div class="affirmations-grid">
+            <div class="affirmation-chip selected" onclick="toggleChip(this)">💪 Motivational</div>
+            <div class="affirmation-chip selected" onclick="toggleChip(this)">🧘 Mindfulness</div>
+            <div class="affirmation-chip" onclick="toggleChip(this)">📚 Study Tips</div>
+            <div class="affirmation-chip" onclick="toggleChip(this)">😊 Feel Good</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success State -->
+      <div class="notif-success" id="notifSuccess">
+        <div class="check">✅</div>
+        <h3>Notifications Enabled!</h3>
+        <p>You'll get deadline reminders and daily affirmations.<br>Keep this tab open for reminders to work.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeNotifModal()">Cancel</button>
+        <button class="btn-enable" id="enableBtn" onclick="enableNotifications()">Enable Notifications 🔔</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const affirmations = {
+      "💪 Motivational": [
+        "You are capable of amazing things — keep going! 💪",
+        "Every study session is a step closer to your goal 🎯",
+        "Progress, not perfection. You're doing great! ⭐",
+        "Believe in yourself — your hard work will pay off 🚀",
+        "You've overcome challenges before. This one is no different 🔥"
+      ],
+      "🧘 Mindfulness": [
+        "Take a deep breath. You are exactly where you need to be 🌿",
+        "Rest is part of the journey, not a detour 🌙",
+        "Be kind to yourself today — you deserve it 💚",
+        "One step at a time. You don't have to do it all today 🌱",
+        "Your mental health matters more than any deadline 🧘"
+      ],
+      "📚 Study Tips": [
+        "Try the Pomodoro technique: 25 min study, 5 min break ⏱",
+        "Teach what you learned to someone — it boosts retention 📖",
+        "Start with the hardest task first while your mind is fresh 🧠",
+        "A tidy desk = a tidy mind. Organise your space! ✨",
+        "Review your notes within 24 hours to boost memory 📝"
+      ],
+      "😊 Feel Good": [
+        "You showed up today — that already counts! 😊",
+        "Smile! You're doing better than you think 🌟",
+        "You are more than your grades 💛",
+        "Celebrate the small wins — they add up! 🎉",
+        "You've got this. And if not today, tomorrow 🌈"
+      ]
+    };
+
+    let notifInterval = null;
+    let deadlineInterval = null;
+
+    function openNotifModal() {
+      document.getElementById('notifModal').classList.add('open');
+      const saved = localStorage.getItem('notifSettings');
+      if (saved) {
+        document.getElementById('permStatus').textContent = '✅ Notifications are active!';
+      }
+    }
+
+    function closeNotifModal() {
+      document.getElementById('notifModal').classList.remove('open');
+    }
+
+    function toggleChip(el) {
+      el.classList.toggle('selected');
+    }
+
+    function addDeadline() {
+      const list = document.getElementById('deadlinesList');
+      const row = document.createElement('div');
+      row.className = 'deadline-row';
+      row.innerHTML = `<input type="text" placeholder="Subject / Assignment name"><input type="date"><button class="remove-btn" onclick="removeDeadline(this)">✕</button>`;
+      list.appendChild(row);
+    }
+
+    function removeDeadline(btn) {
+      const rows = document.querySelectorAll('.deadline-row');
+      if (rows.length > 1) btn.parentElement.remove();
+    }
+
+    async function enableNotifications() {
+      if (!('Notification' in window)) {
+        document.getElementById('permStatus').textContent = '❌ Your browser does not support notifications.';
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        document.getElementById('permStatus').textContent = '❌ Permission denied. Please allow notifications in browser settings.';
+        return;
+      }
+
+      // Collect deadlines
+      const rows = document.querySelectorAll('.deadline-row');
+      const deadlines = [];
+      rows.forEach(row => {
+        const inputs = row.querySelectorAll('input');
+        if (inputs[0].value && inputs[1].value) {
+          deadlines.push({ subject: inputs[0].value, date: inputs[1].value });
+        }
+      });
+
+      // Collect selected affirmation types
+      const selected = [];
+      document.querySelectorAll('.affirmation-chip.selected').forEach(chip => {
+        selected.push(chip.textContent.trim());
+      });
+
+      const reminderTime = document.getElementById('reminderTime').value;
+
+      // Save settings
+      const settings = { deadlines, selected, reminderTime, enabled: true };
+      localStorage.setItem('notifSettings', JSON.stringify(settings));
+
+      // Show success
+      document.getElementById('modalBody').style.display = 'none';
+      document.getElementById('notifSuccess').style.display = 'block';
+      document.getElementById('enableBtn').style.display = 'none';
+      document.getElementById('activeBadge').style.display = 'block';
+
+      // Send immediate welcome notification
+      new Notification('StudAI Notifications Enabled! 🎉', {
+        body: 'You will now receive deadline reminders and daily affirmations.',
+        icon: 'https://Mokshi051.github.io/StudAI/frontend/assets/icon.png'
+      });
+
+      // Start notification scheduler
+      startNotifications(settings);
+
+      setTimeout(() => closeNotifModal(), 3000);
+    }
+
+    function startNotifications(settings) {
+      // Clear existing intervals
+      if (notifInterval) clearInterval(notifInterval);
+      if (deadlineInterval) clearInterval(deadlineInterval);
+
+      // Send affirmation every hour
+      notifInterval = setInterval(() => {
+        sendAffirmation(settings.selected);
+      }, 60 * 60 * 1000);
+
+      // Check deadlines every hour
+      deadlineInterval = setInterval(() => {
+        checkDeadlines(settings.deadlines);
+      }, 60 * 60 * 1000);
+
+      // Send first affirmation after 5 seconds (demo)
+      setTimeout(() => sendAffirmation(settings.selected), 5000);
+
+      // Check deadlines immediately
+      checkDeadlines(settings.deadlines);
+    }
+
+    function sendAffirmation(selectedTypes) {
+      if (!selectedTypes || selectedTypes.length === 0) return;
+      const type = selectedTypes[Math.floor(Math.random() * selectedTypes.length)];
+      const msgs = affirmations[type];
+      if (!msgs) return;
+      const msg = msgs[Math.floor(Math.random() * msgs.length)];
+      new Notification('StudAI Daily Boost ✨', { body: msg });
+    }
+
+    function checkDeadlines(deadlines) {
+      if (!deadlines || deadlines.length === 0) return;
+      const today = new Date();
+      deadlines.forEach(dl => {
+        const dlDate = new Date(dl.date);
+        const daysLeft = Math.ceil((dlDate - today) / (1000 * 60 * 60 * 24));
+        if (daysLeft === 3) {
+          new Notification(`⚠️ Deadline in 3 days!`, { body: `${dl.subject} is due in 3 days. Plan your time wisely! 📅` });
+        } else if (daysLeft === 1) {
+          new Notification(`🚨 ${dl.subject} is due TOMORROW!`, { body: `Final push! You've got this 💪` });
+        } else if (daysLeft === 0) {
+          new Notification(`🔔 ${dl.subject} is due TODAY!`, { body: `Stay focused — submit by end of day! 🎯` });
+        }
+      });
+    }
+
+    // On page load, restart notifications if previously enabled
+    window.onload = function() {
+      const saved = localStorage.getItem('notifSettings');
+      if (saved) {
+        const settings = JSON.parse(saved);
+        if (settings.enabled && Notification.permission === 'granted') {
+          document.getElementById('activeBadge').style.display = 'block';
+          startNotifications(settings);
+        }
+      }
+    };
+
+    // Close modal on overlay click
+    document.getElementById('notifModal').addEventListener('click', function(e) {
+      if (e.target === this) closeNotifModal();
+    });
+  </script>
 </body>
 </html>
