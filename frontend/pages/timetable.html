@@ -116,7 +116,7 @@
     async function regenerate(){
       if(!currentMeta){renderFallback();return;}
       try{
-        const res=await fetch("http://127.0.0.1:5000/generate_timetable",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({weekly_availability:currentMeta.weeklyHours,burnout_status:currentMeta.burnout_status,burnout_severity:currentMeta.burnout_severity,lighten_workload:false,regenerate:true})});
+        const res=await fetch("https://studai-26wn.onrender.com/generate_timetable",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({weekly_availability:currentMeta.weeklyHours,burnout_status:currentMeta.burnout_status,burnout_severity:currentMeta.burnout_severity,lighten_workload:false,regenerate:true})});
         const timetable=await res.json();currentTimetable=timetable;
         sessionStorage.setItem("timetableData",JSON.stringify(timetable));renderTimetable(timetable,currentMeta);
       }catch{renderFallback();}

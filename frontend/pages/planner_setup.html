@@ -103,7 +103,7 @@
       else if(stress>=6){burnout_status="At Risk";burnout_severity="High";}
       else if(stress>=4){burnout_status="At Risk";burnout_severity="Moderate";}
       try{
-        const response=await fetch("http://127.0.0.1:5000/generate_timetable",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({weekly_availability:weeklyHours,burnout_status,burnout_severity,lighten_workload:false,regenerate:false})});
+        const response=await fetch("https://studai-26wn.onrender.com/generate_timetable",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({weekly_availability:weeklyHours,burnout_status,burnout_severity,lighten_workload:false,regenerate:false})});
         if(!response.ok)throw new Error("Backend error");
         const timetable=await response.json();
         sessionStorage.setItem("timetableData",JSON.stringify(timetable));
