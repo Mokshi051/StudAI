@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StudAI — Burnout Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#1a2740;--accent:#6c63ff;--text:#1f2a44;--muted:#64748b;--glass-strong:rgba(255,255,255,0.45);--glass-border:rgba(255,255,255,0.55);}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'DM Sans',sans-serif;background:#b5eeeb;min-height:100vh;color:var(--text);overflow-x:hidden;}
+    .bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+    .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.55;animation:drift 18s ease-in-out infinite;}
+    .orb-1{width:520px;height:520px;background:#a8edea;top:-160px;left:-120px;}.orb-2{width:440px;height:440px;background:#fed6e3;top:35%;right:-100px;animation-delay:-6s;}.orb-3{width:320px;height:320px;background:#c4b5fd;bottom:-80px;left:35%;animation-delay:-11s;}
+    @keyframes drift{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(28px,-18px) scale(1.04);}66%{transform:translate(-18px,26px) scale(0.97);}}
+    nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:66px;background:var(--navy);box-shadow:0 2px 24px rgba(0,0,0,0.2);}
+    .nav-logo{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#fff;}.nav-logo span{color:#a8edea;}
+    .nav-links{display:flex;gap:10px;}
+    .nav-link{font-size:13px;color:rgba(255,255,255,0.75);text-decoration:none;background:rgba(255,255,255,0.1);padding:6px 14px;border-radius:20px;transition:background 0.2s;}
+    .nav-link:hover{background:rgba(255,255,255,0.2);}
+    .page{position:relative;z-index:1;padding:0 20px 64px;}
+    .page-hero{text-align:center;padding:44px 20px 28px;}
+    .page-hero h1{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;color:var(--navy);margin-bottom:8px;letter-spacing:-0.8px;}
+    .page-hero p{font-size:14.5px;color:var(--muted);}
+    .container{max-width:720px;margin:0 auto;}
+    .card{background:var(--glass-strong);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid var(--glass-border);border-radius:20px;padding:26px;margin-bottom:16px;box-shadow:0 8px 32px rgba(0,0,0,0.08);animation:slideUp 0.5s ease both;}
+    @keyframes slideUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+    .card:nth-child(2){animation-delay:0.06s;}.card:nth-child(3){animation-delay:0.12s;}.card:nth-child(4){animation-delay:0.18s;}.card:nth-child(5){animation-delay:0.24s;}
+    .card-label{font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+    .card h2{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:14px;}
+    /* Score card */
+    .score-row{display:flex;align-items:center;gap:24px;}
+    .score-ring{position:relative;flex-shrink:0;}
+    .score-ring svg{transform:rotate(-90deg);}
+    .ring-bg{fill:none;stroke:rgba(0,0,0,0.08);stroke-width:10;}
+    .ring-fill{fill:none;stroke-width:10;stroke-linecap:round;stroke-dasharray:345;stroke-dashoffset:90;stroke:#f97316;transition:stroke-dashoffset 1.2s ease;}
+    .score-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+    .score-pct{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:#f97316;line-height:1;}
+    .score-label{font-size:11px;font-weight:600;color:var(--muted);margin-top:2px;}
+    .score-details{flex:1;}
+    .score-badge{display:inline-block;background:#f97316;color:white;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:700;font-family:'Syne',sans-serif;margin-bottom:10px;}
+    .score-desc{font-size:14px;color:var(--muted);line-height:1.65;}
+    canvas{max-height:190px;}
+    .summary-text{font-size:14px;line-height:1.75;color:var(--text);}
+    .summary-highlight{background:rgba(255,255,255,0.5);border-left:3px solid #f97316;border-radius:0 10px 10px 0;padding:10px 14px;margin-top:12px;font-size:13.5px;}
+  </style>
+</head>
+<body>
+  <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+  <nav>
+    <div class="nav-logo">Stud<span>AI</span></div>
+    <div class="nav-links">
+      <a href="dashboard.html" class="nav-link">← Dashboard</a>
+      <a href="weekly_checkin.html" class="nav-link">Check-In</a>
+    </div>
+  </nav>
+  <div class="page">
+    <div class="page-hero">
+      <h1>Burnout Dashboard</h1>
+      <p>Your AI-predicted burnout risk and weekly trends</p>
+    </div>
+    <div class="container">
+      <div class="card">
+        <div class="card-label">Current Status</div>
+        <div class="score-row">
+          <div class="score-ring">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle class="ring-bg" cx="60" cy="60" r="55"/>
+              <circle class="ring-fill" cx="60" cy="60" r="55"/>
+            </svg>
+            <div class="score-center">
+              <span class="score-pct">72%</span>
+              <span class="score-label">Risk</span>
+            </div>
+          </div>
+          <div class="score-details">
+            <div class="score-badge">⚠ Moderate Risk</div>
+            <p class="score-desc">Your burnout risk is elevated. Consider lightening your workload and prioritising sleep this week.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Trend</div>
+        <h2>Stress Over 4 Weeks</h2>
+        <canvas id="stressChart"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-label">Balance</div>
+        <h2>Sleep vs Study Hours</h2>
+        <canvas id="sleepWorkChart"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-label">Progress</div>
+        <h2>Assignment Completion</h2>
+        <canvas id="completionChart"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-label">AI Summary</div>
+        <h2>Weekly Insights</h2>
+        <p class="summary-text">Your stress trend is increasing over the past 4 weeks. Sleep dropped below 6 hours this week — a key burnout indicator.</p>
+        <div class="summary-highlight">💡 Consider reducing tomorrow's workload by 20% and taking a 5-minute break every 30 minutes of study.</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    Chart.defaults.font.family="'DM Sans', sans-serif";
+    const gridColor='rgba(0,0,0,0.06)';
+    new Chart(document.getElementById('stressChart'),{type:'line',data:{labels:['Week 1','Week 2','Week 3','Week 4'],datasets:[{label:'Stress',data:[4,5,6,8],borderWidth:2.5,borderColor:'#6c63ff',backgroundColor:'rgba(108,99,255,0.08)',fill:true,tension:0.4,pointBackgroundColor:'#6c63ff',pointRadius:5}]},options:{plugins:{legend:{display:false}},scales:{y:{grid:{color:gridColor},ticks:{stepSize:2}},x:{grid:{color:gridColor}}}}});
+    new Chart(document.getElementById('sleepWorkChart'),{type:'bar',data:{labels:['Mon','Tue','Wed','Thu','Fri'],datasets:[{label:'Sleep (h)',data:[7,6,5,6,5],backgroundColor:'rgba(168,237,234,0.8)',borderRadius:6},{label:'Study (h)',data:[3,4,6,5,7],backgroundColor:'rgba(108,99,255,0.75)',borderRadius:6}]},options:{plugins:{legend:{position:'bottom'}},scales:{y:{grid:{color:gridColor}},x:{grid:{color:gridColor}}}}});
+    new Chart(document.getElementById('completionChart'),{type:'doughnut',data:{labels:['Completed','Pending'],datasets:[{data:[70,30],backgroundColor:['#a8edea','#fed6e3'],borderWidth:0,hoverOffset:6}]},options:{cutout:'65%',plugins:{legend:{position:'bottom'}}}});
+  </script>
+</body>
+</html>

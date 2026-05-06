@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><title>StudAI — Planner Setup</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2740;--accent:#6c63ff;--text:#1f2a44;--muted:#64748b;--glass-strong:rgba(255,255,255,0.48);--glass-border:rgba(255,255,255,0.55);}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:#b5eeeb;min-height:100vh;color:var(--text);overflow-x:hidden;}
+  .bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.55;animation:drift 18s ease-in-out infinite;}
+  .orb-1{width:520px;height:520px;background:#a8edea;top:-160px;left:-120px;}.orb-2{width:440px;height:440px;background:#fed6e3;top:35%;right:-100px;animation-delay:-6s;}.orb-3{width:320px;height:320px;background:#c4b5fd;bottom:-80px;left:35%;animation-delay:-11s;}
+  @keyframes drift{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(28px,-18px) scale(1.04);}66%{transform:translate(-18px,26px) scale(0.97);}}
+  nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:66px;background:var(--navy);box-shadow:0 2px 24px rgba(0,0,0,0.2);}
+  .nav-logo{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#fff;}.nav-logo span{color:#a8edea;}
+  .nav-link{font-size:13px;color:rgba(255,255,255,0.75);text-decoration:none;background:rgba(255,255,255,0.1);padding:6px 14px;border-radius:20px;transition:background 0.2s;}
+  .nav-link:hover{background:rgba(255,255,255,0.2);}
+  .page{position:relative;z-index:1;padding:0 20px 64px;}
+  .page-hero{text-align:center;padding:44px 20px 28px;}
+  .page-hero h1{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;color:var(--navy);margin-bottom:8px;letter-spacing:-0.8px;}
+  .page-hero p{font-size:14.5px;color:var(--muted);}
+  .container{max-width:540px;margin:0 auto;}
+  .card{background:var(--glass-strong);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid var(--glass-border);border-radius:22px;padding:34px;box-shadow:0 10px 40px rgba(0,0,0,0.09);}
+  .section-title{font-size:10.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--navy);opacity:0.45;margin:26px 0 14px;}
+  .section-title:first-child{margin-top:0;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;}
+  .field input,.field textarea,.field select{width:100%;padding:11px 14px;background:rgba(255,255,255,0.82);border:1.5px solid rgba(255,255,255,0.75);border-radius:12px;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);transition:border-color 0.2s,box-shadow 0.2s;}
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,0.13);}
+  .field textarea{min-height:88px;resize:vertical;}
+  .field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2364748b' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+  input[type="range"]{accent-color:var(--accent);}
+  .range-row{display:flex;align-items:center;gap:12px;margin-top:6px;}
+  .range-row input{flex:1;}
+  .range-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--accent);min-width:30px;}
+  .range-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .submit-btn{width:100%;margin-top:26px;padding:13px;background:linear-gradient(135deg,#7c74ff,#5a52dd);color:white;border:none;border-radius:14px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .submit-btn:hover{transform:translateY(-1px);box-shadow:0 8px 26px rgba(108,99,255,0.3);}
+  .submit-btn:disabled{background:#b0bac9;cursor:not-allowed;transform:none;box-shadow:none;}
+  .error-msg{color:#e53e3e;background:rgba(255,255,255,0.6);border:1px solid rgba(229,62,62,0.2);border-radius:10px;padding:10px 14px;margin-top:12px;font-size:13px;display:none;}
+  input::placeholder,textarea::placeholder{color:#b0bac9;}
+</style>
+</head>
+<body>
+  <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+  <nav>
+    <div class="nav-logo">Stud<span>AI</span></div>
+    <a href="dashboard.html" class="nav-link">← Dashboard</a>
+  </nav>
+  <div class="page">
+    <div class="page-hero">
+      <h1>Planner Setup</h1>
+      <p>Tell us about your schedule and we'll build your perfect AI timetable</p>
+    </div>
+    <div class="container">
+      <div class="card">
+        <div class="section-title">Academic Details</div>
+        <div class="field"><label>Subjects / Courses</label><textarea id="subjects" placeholder="e.g. AI, Databases, Linear Algebra, Cloud Computing"></textarea></div>
+        <div class="two-col">
+          <div class="field"><label>Assignment Deadline</label><input type="date" id="deadline"></div>
+          <div class="field"><label>Weekly Hours Available</label><input type="number" id="weeklyHours" placeholder="e.g. 20" min="1" max="168"></div>
+        </div>
+
+        <div class="section-title">Schedule & Preferences</div>
+        <div class="field"><label>Usual Sleep Schedule</label><input type="text" id="sleep" placeholder="e.g. 11 PM – 7 AM"></div>
+        <div class="field">
+          <label>Study Preference</label>
+          <select id="studyPref">
+            <option>Morning Study</option>
+            <option>Afternoon Study</option>
+            <option>Evening Study</option>
+            <option>Pomodoro Sessions (25min blocks)</option>
+            <option>Group Study</option>
+          </select>
+        </div>
+
+        <div class="section-title">Wellbeing</div>
+        <div class="field">
+          <label>Current Stress Level: <span id="stressVal" style="color:var(--accent);font-weight:700;">5</span>/10</label>
+          <div class="range-row">
+            <input type="range" id="stress" min="1" max="10" value="5" oninput="document.getElementById('stressVal').textContent=this.value">
+          </div>
+          <div class="range-labels"><span>😌 Low</span><span>😰 High</span></div>
+        </div>
+        <div class="field"><label>Semester Goals</label><textarea id="goals" placeholder="e.g. Maintain CGPA above 8.5, complete all projects on time"></textarea></div>
+
+        <button class="submit-btn" id="submitBtn" onclick="submitPlanner()">✨ Generate My AI Timetable</button>
+        <div class="error-msg" id="errorMsg"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    async function submitPlanner(){
+      const btn=document.getElementById("submitBtn");const errorMsg=document.getElementById("errorMsg");
+      const weeklyHours=parseFloat(document.getElementById("weeklyHours").value);
+      const stress=parseInt(document.getElementById("stress").value);
+      if(!weeklyHours||weeklyHours<1){errorMsg.textContent="Please enter your weekly availability in hours.";errorMsg.style.display="block";return;}
+      btn.disabled=true;btn.textContent="Generating your timetable...";errorMsg.style.display="none";
+      let burnout_status="Low Risk",burnout_severity="Very Low";
+      if(stress>=8){burnout_status="At Risk";burnout_severity="Severe";}
+      else if(stress>=6){burnout_status="At Risk";burnout_severity="High";}
+      else if(stress>=4){burnout_status="At Risk";burnout_severity="Moderate";}
+      try{
+        const response=await fetch("http://127.0.0.1:5000/generate_timetable",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({weekly_availability:weeklyHours,burnout_status,burnout_severity,lighten_workload:false,regenerate:false})});
+        if(!response.ok)throw new Error("Backend error");
+        const timetable=await response.json();
+        sessionStorage.setItem("timetableData",JSON.stringify(timetable));
+        sessionStorage.setItem("plannerMeta",JSON.stringify({subjects:document.getElementById("subjects").value,weeklyHours,stress,burnout_status,burnout_severity,studyPref:document.getElementById("studyPref").value}));
+        window.location.href="timetable.html";
+      }catch(err){
+        errorMsg.textContent="Could not connect to backend. Make sure Flask is running (python main.py).";
+        errorMsg.style.display="block";btn.disabled=false;btn.innerHTML="✨ Generate My AI Timetable";
+      }
+    }
+  </script>
+</body>
+</html>

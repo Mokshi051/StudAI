@@ -1,0 +1,8 @@
+flask
+flask-cors
+marshmallow
+scikit-learn
+pandas
+numpy
+joblib
+plyer

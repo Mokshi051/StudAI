@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StudAI — Weekly Check-In</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#1a2740;--accent:#6c63ff;--accent2:#f97316;--text:#1f2a44;--muted:#64748b;--glass-strong:rgba(255,255,255,0.48);--glass-border:rgba(255,255,255,0.55);}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'DM Sans',sans-serif;background:#b5eeeb;min-height:100vh;color:var(--text);overflow-x:hidden;}
+    .bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+    .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.55;animation:drift 18s ease-in-out infinite;}
+    .orb-1{width:520px;height:520px;background:#a8edea;top:-160px;left:-120px;}.orb-2{width:440px;height:440px;background:#fed6e3;top:35%;right:-100px;animation-delay:-6s;}.orb-3{width:320px;height:320px;background:#c4b5fd;bottom:-80px;left:35%;animation-delay:-11s;}
+    @keyframes drift{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(28px,-18px) scale(1.04);}66%{transform:translate(-18px,26px) scale(0.97);}}
+    nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:66px;background:var(--navy);box-shadow:0 2px 24px rgba(0,0,0,0.2);}
+    .nav-logo{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#fff;}.nav-logo span{color:#a8edea;}
+    .nav-links{display:flex;gap:10px;}
+    .nav-link{font-size:13px;color:rgba(255,255,255,0.75);text-decoration:none;background:rgba(255,255,255,0.1);padding:6px 14px;border-radius:20px;transition:background 0.2s;}
+    .nav-link:hover{background:rgba(255,255,255,0.2);}
+    .page{position:relative;z-index:1;padding:0 20px 64px;}
+    .page-hero{text-align:center;padding:44px 20px 28px;}
+    .page-hero h1{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;color:var(--navy);margin-bottom:8px;letter-spacing:-0.8px;}
+    .page-hero p{font-size:14.5px;color:var(--muted);max-width:420px;margin:0 auto;}
+    .container{max-width:540px;margin:0 auto;}
+    .card{background:var(--glass-strong);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid var(--glass-border);border-radius:22px;padding:34px;box-shadow:0 10px 40px rgba(0,0,0,0.09);animation:slideUp 0.5s ease both;}
+    @keyframes slideUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+    .section-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--navy);opacity:0.45;margin:24px 0 14px;}
+    .section-title:first-child{margin-top:0;}
+    label{font-size:13px;font-weight:600;display:block;margin-bottom:7px;color:var(--text);}
+    .range-row{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
+    input[type="range"]{flex:1;accent-color:var(--accent);height:4px;}
+    .range-val{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--accent);min-width:28px;text-align:right;}
+    .range-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:16px;}
+    .input-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+    .input-group{display:flex;flex-direction:column;gap:6px;}
+    .input-group label{margin-bottom:0;}
+    input[type="number"]{width:100%;padding:11px 14px;background:rgba(255,255,255,0.82);border:1.5px solid rgba(255,255,255,0.75);border-radius:12px;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);transition:border-color 0.2s,box-shadow 0.2s;}
+    input[type="number"]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,0.13);}
+    textarea{width:100%;padding:12px 14px;background:rgba(255,255,255,0.82);border:1.5px solid rgba(255,255,255,0.75);border-radius:12px;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);min-height:100px;resize:vertical;transition:border-color 0.2s;}
+    textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,0.13);}
+    textarea::placeholder,input::placeholder{color:#b0bac9;}
+    .submit-btn{width:100%;margin-top:24px;padding:13px;background:linear-gradient(135deg,#ff8c42,#f97316);color:white;border:none;border-radius:14px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .submit-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(249,115,22,0.3);}
+
+    /* Result */
+    .result-card{background:var(--glass-strong);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid var(--glass-border);border-radius:22px;padding:36px;box-shadow:0 10px 40px rgba(0,0,0,0.09);display:none;animation:slideUp 0.5s ease both;}
+    .result-header{text-align:center;margin-bottom:28px;}
+    .result-header h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--navy);margin-bottom:16px;}
+    .risk-ring{width:110px;height:110px;margin:0 auto 10px;position:relative;}
+    .risk-ring svg{transform:rotate(-90deg);}
+    .risk-ring .ring-bg{fill:none;stroke:rgba(0,0,0,0.07);stroke-width:8;}
+    .risk-ring .ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s ease;}
+    .risk-number{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:28px;font-weight:800;}
+    .risk-level-badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:700;color:white;margin-top:6px;}
+    .analysis-text{font-size:14px;color:var(--muted);line-height:1.7;text-align:left;margin-bottom:18px;padding:14px 16px;background:rgba(255,255,255,0.4);border-radius:12px;}
+    .steps-title{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--navy);opacity:0.5;margin-bottom:10px;}
+    .step{background:rgba(255,255,255,0.5);border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:13.5px;display:flex;align-items:flex-start;gap:9px;}
+    .step-check{font-size:15px;flex-shrink:0;}
+    .last-checkin{text-align:center;font-size:12px;color:var(--muted);margin:16px 0;}
+    .action-btns{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+    .action-btn{padding:12px;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s;color:white;display:flex;align-items:center;justify-content:center;gap:7px;}
+    .action-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,0.15);}
+    .btn-burnout{background:#ec4899;}.btn-retry{background:var(--navy);}
+  </style>
+</head>
+<body>
+  <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+  <nav>
+    <div class="nav-logo">Stud<span>AI</span></div>
+    <div class="nav-links">
+      <a href="dashboard.html" class="nav-link">← Dashboard</a>
+      <a href="burnout_dashboard.html" class="nav-link">Burnout Dashboard</a>
+    </div>
+  </nav>
+  <div class="page">
+    <div class="page-hero">
+      <h1>Weekly Check-In</h1>
+      <p>How are you, really? Regular check-ins help our AI prevent burnout before it hits.</p>
+    </div>
+    <div class="container">
+      <!-- Form -->
+      <div class="card" id="formSection">
+        <div class="section-title">Wellbeing Metrics</div>
+        <label>Stress Level: <span id="stressVal" style="color:var(--accent);font-weight:700;">5</span>/10</label>
+        <div class="range-row">
+          <input type="range" id="stress" min="1" max="10" value="5" oninput="document.getElementById('stressVal').textContent=this.value">
+        </div>
+        <div class="range-labels"><span>😌 Low</span><span>😰 High</span></div>
+
+        <label>Motivation Level: <span id="motivationVal" style="color:var(--accent);font-weight:700;">5</span>/10</label>
+        <div class="range-row">
+          <input type="range" id="motivation" min="1" max="10" value="5" oninput="document.getElementById('motivationVal').textContent=this.value">
+        </div>
+        <div class="range-labels"><span>😞 Low</span><span>🚀 High</span></div>
+
+        <div class="section-title">Academic Data</div>
+        <div class="input-row">
+          <div class="input-group"><label>Sleep Hours/Night</label><input type="number" id="sleep" min="0" max="24" placeholder="e.g. 7"></div>
+          <div class="input-group"><label>Study Hours (Week)</label><input type="number" id="study" min="0" placeholder="e.g. 18"></div>
+        </div>
+        <div style="margin-bottom:14px;">
+          <label>Assignments Completed</label>
+          <input type="number" id="assignments" min="0" placeholder="e.g. 3" style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.82);border:1.5px solid rgba(255,255,255,0.75);border-radius:12px;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;">
+        </div>
+
+        <div class="section-title">Journal Reflection</div>
+        <textarea id="journal" placeholder="Tell us about your week — your mood, challenges, and how you feel about your studies..."></textarea>
+
+        <button class="submit-btn" onclick="submitCheckin()">✦ Analyse My Burnout Risk</button>
+      </div>
+
+      <!-- Result -->
+      <div class="result-card" id="resultSection">
+        <div class="result-header">
+          <h2>Your Burnout Analysis</h2>
+          <div class="risk-ring">
+            <svg width="110" height="110" viewBox="0 0 110 110">
+              <circle class="ring-bg" cx="55" cy="55" r="46"/>
+              <circle class="ring-fill" id="ringFill" cx="55" cy="55" r="46" stroke="#22c55e" stroke-dasharray="289" stroke-dashoffset="289"/>
+            </svg>
+            <div class="risk-number" id="riskNum">0%</div>
+          </div>
+          <div class="risk-level-badge" id="riskBadge">Low Risk</div>
+        </div>
+        <p class="analysis-text" id="analysisText"></p>
+        <div class="steps-title">Actionable Steps</div>
+        <div id="stepsContainer"></div>
+        <div class="last-checkin" id="lastCheckin"></div>
+        <div class="action-btns">
+          <button class="action-btn btn-burnout" onclick="window.location.href='burnout_dashboard.html'">🔥 See Burnout Dashboard</button>
+          <button class="action-btn btn-retry" onclick="location.reload()">↩ Do Another Check-In</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function submitCheckin(){
+      const stress=parseInt(document.getElementById('stress').value);
+      const sleep=parseInt(document.getElementById('sleep').value)||7;
+      const study=parseInt(document.getElementById('study').value)||0;
+      const motivation=parseInt(document.getElementById('motivation').value);
+      const journal=document.getElementById('journal').value;
+      let riskLevel='Low',percent=28,color='#22c55e';
+      if(stress>=8||sleep<=5||motivation<=3||study>=40){riskLevel='High';percent=82;color='#ec4899';}
+      else if(stress>=6||sleep<=6||study>=25){riskLevel='Moderate';percent=62;color='#f97316';}
+      // ring animation
+      const circumference=289;
+      const offset=circumference-(percent/100)*circumference;
+      const ring=document.getElementById('ringFill');
+      ring.style.stroke=color;
+      setTimeout(()=>ring.style.strokeDashoffset=offset,100);
+      document.getElementById('riskNum').textContent=percent+'%';
+      document.getElementById('riskNum').style.color=color;
+      document.getElementById('riskBadge').textContent=riskLevel+' Risk';
+      document.getElementById('riskBadge').style.background=color;
+      document.getElementById('analysisText').textContent=`Based on your stress (${stress}/10), sleep (${sleep}h), study load (${study}h/week), and motivation (${motivation}/10), StudAI predicts a ${riskLevel.toLowerCase()} burnout risk.`+(journal?` Your reflection: "${journal.slice(0,80)}..."`:``);
+      const steps=[];
+      if(stress>6)steps.push({icon:'⏱',text:'Take structured breaks using the Pomodoro technique.'});
+      if(sleep<7)steps.push({icon:'😴',text:'Improve your sleep schedule — aim for at least 7 hours.'});
+      if(motivation<5)steps.push({icon:'🎯',text:'Split big goals into smaller, achievable milestones.'});
+      if(study>20)steps.push({icon:'🧘',text:'Balance study hours with hobbies and downtime.'});
+      if(steps.length===0)steps.push({icon:'⭐',text:'Great balance! Maintain your current routine.'});
+      const container=document.getElementById('stepsContainer');
+      container.innerHTML='';
+      steps.forEach(s=>{const d=document.createElement('div');d.className='step';d.innerHTML=`<span class="step-check">${s.icon}</span><span>${s.text}</span>`;container.appendChild(d);});
+      const today=new Date().toLocaleDateString();
+      localStorage.setItem('lastCheckinDate',today);localStorage.setItem('lastCheckinRisk',percent);localStorage.setItem('lastCheckinLevel',riskLevel);
+      const lastDate=localStorage.getItem('lastCheckinDate');const lastRisk=localStorage.getItem('lastCheckinRisk');
+      if(lastDate&&lastRisk)document.getElementById('lastCheckin').textContent=`Last check-in: ${lastDate} — ${lastRisk}% (${riskLevel})`;
+      document.getElementById('formSection').style.display='none';
+      document.getElementById('resultSection').style.display='block';
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+  </script>
+</body>
+</html>

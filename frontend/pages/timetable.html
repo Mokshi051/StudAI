@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><title>StudAI — Smart Timetable</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2740;--accent:#6c63ff;--text:#1f2a44;--muted:#64748b;--glass-strong:rgba(255,255,255,0.44);--glass-border:rgba(255,255,255,0.55);}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:#b5eeeb;min-height:100vh;color:var(--text);overflow-x:hidden;}
+  .bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.55;animation:drift 18s ease-in-out infinite;}
+  .orb-1{width:520px;height:520px;background:#a8edea;top:-160px;left:-120px;}.orb-2{width:440px;height:440px;background:#fed6e3;top:35%;right:-100px;animation-delay:-6s;}.orb-3{width:320px;height:320px;background:#c4b5fd;bottom:-80px;left:35%;animation-delay:-11s;}
+  @keyframes drift{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(28px,-18px) scale(1.04);}66%{transform:translate(-18px,26px) scale(0.97);}}
+  nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:66px;background:var(--navy);box-shadow:0 2px 24px rgba(0,0,0,0.2);}
+  .nav-logo{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#fff;}.nav-logo span{color:#a8edea;}
+  .nav-links{display:flex;gap:10px;}
+  .nav-link{font-size:13px;color:rgba(255,255,255,0.75);text-decoration:none;background:rgba(255,255,255,0.1);padding:6px 14px;border-radius:20px;transition:background 0.2s;}
+  .nav-link:hover{background:rgba(255,255,255,0.2);}
+  .meta-strip{position:relative;z-index:5;background:rgba(255,255,255,0.25);border-bottom:1px solid rgba(255,255,255,0.35);padding:10px 40px;font-size:13px;display:none;gap:28px;flex-wrap:wrap;align-items:center;}
+  .meta-strip span{font-weight:600;color:var(--navy);}
+  .meta-strip span small{font-weight:400;color:var(--muted);margin-left:4px;}
+  .page{position:relative;z-index:1;padding:0 0 60px;}
+  .page-hero{text-align:center;padding:36px 20px 20px;}
+  .page-hero h1{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--navy);margin-bottom:6px;letter-spacing:-0.8px;}
+  .page-hero p{font-size:14px;color:var(--muted);}
+  .controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:24px;padding:0 20px;}
+  .ctrl-btn{padding:10px 22px;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;color:white;display:flex;align-items:center;gap:6px;}
+  .ctrl-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,0.14);}
+  .btn-regen{background:#6c63ff;}.btn-lighten{background:#f97316;}.btn-dash{background:var(--navy);}
+  .calendar{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:0 24px 20px;max-width:1100px;margin:0 auto;}
+  @media(max-width:720px){.calendar{grid-template-columns:1fr;}}
+  .day{background:var(--glass-strong);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--glass-border);border-radius:18px;padding:18px;box-shadow:0 6px 24px rgba(0,0,0,0.07);min-height:220px;display:flex;flex-direction:column;transition:border-color 0.2s;}
+  .day.drag-over{border-color:var(--accent);box-shadow:0 6px 24px rgba(108,99,255,0.2);}
+  .day-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .day h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--navy);}
+  .day-count{font-size:11px;color:var(--muted);font-weight:500;}
+  .task{background:rgba(255,255,255,0.72);border-radius:10px;padding:8px 10px;margin-top:7px;display:flex;align-items:center;gap:8px;font-size:13px;cursor:grab;border-left:3.5px solid #6c63ff;transition:box-shadow 0.2s;}
+  .task:hover{box-shadow:0 3px 12px rgba(0,0,0,0.10);}
+  .task:active{cursor:grabbing;}
+  .task-check{transform:scale(1.1);flex-shrink:0;accent-color:var(--accent);}
+  .task-check:checked+.task-text{text-decoration:line-through;opacity:0.45;}
+  .task-text{flex:1;outline:none;}
+  .priority{font-size:10px;padding:2px 8px;border-radius:20px;color:white;font-weight:600;flex-shrink:0;font-family:'Syne',sans-serif;}
+  .high{background:#ec4899;}.medium{background:#f97316;}.low{background:#22c55e;}
+</style>
+</head>
+<body>
+  <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+  <nav>
+    <div class="nav-logo">Stud<span>AI</span></div>
+    <div class="nav-links">
+      <a href="planner_setup.html" class="nav-link">← Edit Setup</a>
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
+    </div>
+  </nav>
+  <div class="meta-strip" id="metaBar"></div>
+  <div class="page">
+    <div class="page-hero">
+      <h1>Your Smart Timetable</h1>
+      <p>Drag tasks to reschedule • Click any task to rename it</p>
+    </div>
+    <div class="controls">
+      <button class="ctrl-btn btn-regen" onclick="regenerate()">🔄 Regenerate</button>
+      <button class="ctrl-btn btn-lighten" onclick="lightenLoad()">😌 Lighten Workload</button>
+      <button class="ctrl-btn btn-dash" onclick="window.location.href='dashboard.html'">🏠 Dashboard</button>
+    </div>
+    <div class="calendar" id="calendar"></div>
+  </div>
+  <script>
+    let draggedTask=null,currentTimetable=null,currentMeta=null;
+    const days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+    function createTask(text,priorityClass){
+      const task=document.createElement("div");task.className="task";task.draggable=true;
+      task.innerHTML=`<input type="checkbox" class="task-check"><span class="task-text" contenteditable="false">${text}</span><span class="priority ${priorityClass}">${priorityClass.charAt(0).toUpperCase()+priorityClass.slice(1)}</span>`;
+      task.addEventListener("dragstart",()=>draggedTask=task);
+      const ts=task.querySelector(".task-text");
+      ts.addEventListener("click",()=>{ts.contentEditable="true";ts.focus();});
+      ts.addEventListener("blur",()=>ts.contentEditable="false");
+      return task;
+    }
+    function renderTimetable(timetable,meta){
+      const calendar=document.getElementById("calendar");calendar.innerHTML="";
+      const stress=meta?meta.stress:5;
+      const subjects=meta&&meta.subjects?meta.subjects.split(",").map(s=>s.trim()).filter(Boolean):["Study Session"];
+      const dayKeys=Object.keys(timetable).filter(k=>days.includes(k));
+      const activeDays=dayKeys.length>0?dayKeys:days.slice(0,5);
+      activeDays.forEach(day=>{
+        const db=document.createElement("div");db.className="day";
+        db.innerHTML=`<div class="day-header"><h3>${day}</h3><span class="day-count">${subjects.length} task${subjects.length!==1?'s':''}</span></div>`;
+        db.ondragover=e=>e.preventDefault();
+        db.ondrop=function(e){e.preventDefault();if(draggedTask)this.appendChild(draggedTask);};
+        const dayHours=timetable[day]||2;
+        subjects.forEach((subject,i)=>{const hours=Math.max(1,Math.round(dayHours/subjects.length));db.appendChild(createTask(`${subject} — ${hours}h`,i===0?"high":stress>=6?"medium":"low"));});
+        if(stress<8)db.appendChild(createTask("Break / Walk 🧘","low"));
+        calendar.appendChild(db);
+      });
+    }
+    function renderFallback(){
+      const calendar=document.getElementById("calendar");calendar.innerHTML="";
+      days.slice(0,6).forEach(day=>{
+        const db=document.createElement("div");db.className="day";
+        db.innerHTML=`<div class="day-header"><h3>${day}</h3><span class="day-count">3 tasks</span></div>`;
+        db.ondragover=e=>e.preventDefault();db.ondrop=function(e){e.preventDefault();if(draggedTask)this.appendChild(draggedTask);};
+        db.appendChild(createTask("Study Session — 2h","high"));
+        db.appendChild(createTask("Assignment — 1h","medium"));
+        db.appendChild(createTask("Break / Review 🧘","low"));
+        calendar.appendChild(db);
+      });
+    }
+    function showMeta(meta){
+      if(!meta)return;
+      const bar=document.getElementById("metaBar");bar.style.display="flex";
+      bar.innerHTML=`<span>⏱ ${meta.weeklyHours}h/week</span><span>😓 Stress: ${meta.stress}/10</span><span>🎯 ${meta.burnout_status} — ${meta.burnout_severity}</span><span>📚 ${meta.studyPref}</span>`;
+    }
+    async function regenerate(){
+      if(!currentMeta){renderFallback();return;}
+      try{
+        const res=await fetch("http://127.0.0.1:5000/generate_timetable",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({weekly_availability:currentMeta.weeklyHours,burnout_status:currentMeta.burnout_status,burnout_severity:currentMeta.burnout_severity,lighten_workload:false,regenerate:true})});
+        const timetable=await res.json();currentTimetable=timetable;
+        sessionStorage.setItem("timetableData",JSON.stringify(timetable));renderTimetable(timetable,currentMeta);
+      }catch{renderFallback();}
+    }
+    function lightenLoad(){document.querySelectorAll(".task").forEach((task,i)=>{if(i%2===0)task.remove();});}
+    window.onload=function(){
+      const raw=sessionStorage.getItem("timetableData");
+      const metaRaw=sessionStorage.getItem("plannerMeta");
+      currentMeta=metaRaw?JSON.parse(metaRaw):null;showMeta(currentMeta);
+      if(raw){currentTimetable=JSON.parse(raw);renderTimetable(currentTimetable,currentMeta);}else renderFallback();
+    };
+  </script>
+</body>
+</html>
